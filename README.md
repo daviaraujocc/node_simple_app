@@ -1,3 +1,4 @@
 # App
 
-This is a repository containing a simple node app (api, web) that will be used for K8S-CICD
+This is a repository containing a simple node app (api, web) that will be used for K8S-CICD (https://github.com/DaviAraujoCC/K8s-CICD)
+
