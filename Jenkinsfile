@@ -13,43 +13,23 @@ pipeline {
    }
   
     stages {
-        stage('Clone Git') {
+        stage('Checkout SCM') {
              steps {
                  git(credentialsId: '1bd4fb12-1bd4-4f3f-b155-7764792770ab', url: 'https://github.com/DaviAraujoCC/node_simple_app', branch: 'main')
              }
-        }
-        stage('Install dependecies') {
-            steps {
-              dir ('src/api') {
-                bat "npm install"
-              }
-              dir ('src/web') {
-                bat "npm install"  
-              }
-            }
-        }
-        stage('Build app') {
-            steps {
-              dir ('src/web') {
-                bat 'npm build'
-              }
-              dir ('src/api') {
-                bat 'npm build'
-              }
-            }
         }
         stage('Build Image') {
             steps {
               dir ('src/web') {
                 script {
                      docker.build registry + ":$BUILD_NUMBER"
-                     dockerImage_web = docker.build registry + ":$BUILD_NUMBER"
+                     dockerImage_web = docker.build registry + "/node-web-app:v$BUILD_NUMBER"
                 }
               }
               dir ('src/api') {
                 script {
                      docker.build registry + ":$BUILD_NUMBER"
-                     dockerImage_api = docker.build registry + ":$BUILD_NUMBER"
+                     dockerImage_api = docker.build registry +"/node-api-app:v$BUILD_NUMBER"
                 }
               }
             }
@@ -64,5 +44,11 @@ pipeline {
               }
             }
         }
+        stage('Remove Unused docker image') {
+      steps{
+        bat "docker rmi $registry/node-api-app:v$BUILD_NUMBER"
+        bat "docker rmi $registry/node-web-app:v$BUILD_NUMBER"
+      }
+    }
     }
 }
